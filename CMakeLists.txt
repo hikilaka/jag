@@ -1,13 +1,15 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.8)
 
 project(Jag)
+
 
 find_package(Threads
     REQUIRED)
 
-find_package(Boost 1.67.0
+find_package(Boost
     REQUIRED
     COMPONENTS
+        filesystem
         iostreams
         system
         program_options)
@@ -24,6 +26,7 @@ target_include_directories(jag PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 target_link_libraries(jag
+    "${CMAKE_DL_LIBS}"
     "${CMAKE_THREAD_LIBS_INIT}"
     "${Boost_LIBRARIES}")
 
