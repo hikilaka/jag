@@ -3,9 +3,13 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
+#include <iterator>
 #include <type_traits>
 #include <vector>
+
+#include <spdlog/spdlog.h>
 
 namespace sysd {
 template <typename T, typename C = std::vector<std::decay_t<T>>>
@@ -13,6 +17,7 @@ struct basic_buffer {
     using type = std::decay_t<T>;
     using container_type = C;
 
+    basic_buffer() = default;
     basic_buffer(const std::initializer_list<type> &data) : buf{data} {}
     basic_buffer(const container_type &data) : buf{data} {}
 
@@ -34,11 +39,22 @@ struct basic_buffer {
         return result;
     }
 
+    template <std::size_t N, typename R> constexpr void write(const R &value) {
+        for (std::size_t i = N; i-- > 0;) {
+            buf.emplace_back((value >> (i * 8)) & 0xff);
+        }
+    }
+
+    constexpr void write(const basic_buffer &other) {
+        std::copy(std::cbegin(other.data()), std::cend(other.data()),
+                  std::back_inserter(buf));
+    }
+
     const container_type &data() const { return buf; }
     const std::size_t &position() const { return caret; }
 
   private:
-    container_type buf;
+    container_type buf = {};
     std::size_t caret = 0;
 };
 

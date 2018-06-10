@@ -21,7 +21,12 @@ namespace sysd::jag {
 struct archive {
     using entry_type = std::tuple<std::uint32_t, sysd::buffer>;
 
-    archive(sysd::buffer &b) : entries{} { read_headers(b); }
+    static constexpr std::size_t compression_threshold = 2048;
+
+    archive() = default;
+    archive(sysd::buffer &b) { read_headers(b); }
+
+    const std::vector<entry_type> &get_entries() const { return entries; }
 
     boost::optional<const sysd::buffer &> get(const boost::string_view file) {
         const auto encoded = detail::encode_entry_name(file);
@@ -35,11 +40,28 @@ struct archive {
         return boost::none;
     }
 
+    void put(const boost::string_view file, sysd::buffer &buffer) {
+        auto log = spdlog::get("jag");
+
+        const auto encoded = detail::encode_entry_name(file);
+
+        for (auto &entry : entries) {
+            if (std::get<std::uint32_t>(entry) == encoded) {
+                log->warn("replaced {} in archive", file.to_string());
+                std::get<sysd::buffer>(entry) = std::move(buffer);
+                return;
+            }
+        }
+
+        log->debug("added new archive entry {}", file.to_string());
+        entries.emplace_back(encoded, std::move(buffer));
+    }
+
   private:
-    std::vector<entry_type> entries;
+    std::vector<entry_type> entries{};
 
     void read_headers(sysd::buffer &buffer) {
-        auto log = spdlog::get("console");
+        auto log = spdlog::get("jag");
 
         const auto decomp_len = buffer.read<3, std::size_t>();
         const auto comp_len = buffer.read<3, std::size_t>();
@@ -59,7 +81,7 @@ struct archive {
         unpack_files(decompressed);
     }
     void unpack_files(sysd::buffer &buffer) {
-        auto log = spdlog::get("console");
+        auto log = spdlog::get("jag");
 
         // The decompressed file format contains a header of 2 bytes for number
         // of files within the archive. Then follows the entry table, for each
