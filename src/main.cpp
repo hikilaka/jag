@@ -11,7 +11,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
 #include <boost/program_options.hpp>
-#include <boost/stacktrace.hpp>
 
 boost::optional<sysd::buffer> read_file(const std::string name) {
     std::ifstream file(name, std::ios::binary);
@@ -219,11 +218,7 @@ int main(int argc, char **argv) {
             }
         }
     } catch (std::exception &e) {
-        auto trace = boost::stacktrace::stacktrace();
         log->critical("uncaught exception: {}", e.what());
-        std::stringstream ss{};
-        ss << trace;
-        fmt::print("{}", ss.str());
     }
     return 0;
 }
