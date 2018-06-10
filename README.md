@@ -18,7 +18,7 @@ Try `$ jag --help` for additional usage information.
 ## Dependencies
 
 * Any C++17 compiler
-* Boost 1.67
+* Boost (pretty much any some-what modern version will work)
 
 ## License
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
