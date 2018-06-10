@@ -1,6 +1,6 @@
 # Jag
 
-Jag is a basic command line utility to extract files from jagex cache files. Future functionality for insertion of files will hopefully be implemented _soon_.
+Jag is a command line utility to manage Jagex's proprietary cache files. It can extract or insert files into existing archives, or even create brand new archives.
 
 ## Usage
 
