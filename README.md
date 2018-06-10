@@ -7,7 +7,6 @@ Jag is a command line utility to manage Jagex's proprietary cache files. It can 
 Using jag is easy. Just specify the name of the files you want to extract and the archive's name.
 ```bash
 $ jag --extract logo.tga jagex.jag
-$ jag --extract logo.tga
 ```
 You can create a new archive with the --create option.
 ```bash
